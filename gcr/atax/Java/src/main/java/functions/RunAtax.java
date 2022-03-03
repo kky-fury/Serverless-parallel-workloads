@@ -23,7 +23,7 @@ import ataxpackage.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,30 +43,17 @@ public class RunAtax {
 
   @RestController
   class AtaxController {
-    @PostMapping(path= "/{id}", consumes = "application/json")
-    String execute(@RequestBody Map<String, String> inputParams) throws NumberFormatException, InterruptedException  {
-      count.getAndIncrement();
-      String addInfo = "InvocationCount: " + count.get() + "\n";
-      if(count.get() <= 1) {
-      try {
-        File myObj = new File("/proc/cpuinfo");
-        Scanner myReader = new Scanner(myObj);
-        while (myReader.hasNextLine()) {
-          String data = myReader.nextLine();
-          addInfo += data + "\n";
-        }
-        myReader.close();
-      } catch (FileNotFoundException e) {
-        System.out.println("File not found");
-        e.printStackTrace();
-      }
-    }
+    @GetMapping("/")
+    String execute() throws InterruptedException {
+      
       Atax atax = new Atax();
-      String res = atax.runAtax(inputParams.get("Input"), Integer.parseInt(inputParams.get("Threads")));
-      res += "\n" + addInfo;
+      String res = atax.runAtax("M", 1);
+      // res += "\n";
+      System.out.println(res);
       return res;
     }
   }
+
 
   public static void main(String[] args) {
     SpringApplication.run(RunAtax.class, args);
